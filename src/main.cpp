@@ -91,7 +91,16 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double steer_value = j[1]["steering_angle"];
+          double throttle_value = j[1]["throttle"];
+          
+          double latency = 0.1;
+          double Lf = 2.67;
 
+          v = v + throttle_value*latency;
+          psi = psi - v*steer_value/Lf*latency;
+          px = px + v*cos(psi)*latency;
+          py = py + v*sin(psi)*latency;
           
           /*
           * TODO: Calculate steering angle and throttle using MPC.
@@ -121,45 +130,13 @@ int main() {
           
           double epsi = - atan(coeffs[1]);
           
-          double steer_value = j[1]["steering_angle"];
-          double throttle_value = j[1]["throttle"];
+
           
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
           
-//          std::vector<double> x_vals = {state[0]};
-//          std::vector<double> y_vals = {state[1]};
-//          std::vector<double> psi_vals = {state[2]};
-//          std::vector<double> v_vals = {state[3]};
-//          std::vector<double> cte_vals = {state[4]};
-//          std::vector<double> epsi_vals = {state[5]};
-//          std::vector<double> delta_vals = {};
-//          std::vector<double> a_vals = {};
-          
           auto vars = mpc.Solve(state, coeffs);
           
-//          x_vals.push_back(vars[0]);
-//          y_vals.push_back(vars[1]);
-//          psi_vals.push_back(vars[2]);
-//          v_vals.push_back(vars[3]);
-//          cte_vals.push_back(vars[4]);
-//          epsi_vals.push_back(vars[5]);
-//          
-//          delta_vals.push_back(vars[6]);
-//          a_vals.push_back(vars[7]);
-//          
-//          state << vars[0], vars[1], vars[2], vars[3], vars[4], vars[5];
-//          std::cout << "x = " << vars[0] << std::endl;
-//          std::cout << "y = " << vars[1] << std::endl;
-//          std::cout << "psi = " << vars[2] << std::endl;
-//          std::cout << "v = " << vars[3] << std::endl;
-//          std::cout << "cte = " << vars[4] << std::endl;
-//          std::cout << "epsi = " << vars[5] << std::endl;
-//          std::cout << "delta = " << vars[6] << std::endl;
-//          std::cout << "a = " << vars[7] << std::endl;
-//          std::cout << std::endl;
-          
-          double Lf = 2.67;
           steer_value = - vars[0]/(Lf*deg2rad(25));
           throttle_value = vars[1];
           
@@ -201,7 +178,7 @@ int main() {
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
           double poly_inc = 2.5;
-          int num_points = 25;
+          int num_points = 20;
           for (int i = 1; i < num_points; i++ ){
             next_x_vals.push_back(poly_inc*i);
             next_y_vals.push_back(polyeval(coeffs, poly_inc*i));
