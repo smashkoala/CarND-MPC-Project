@@ -3,6 +3,40 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Writup (Rubric points)
+1. Code must compile without errors with cmake and make.  
+>Yes, it does compile without errors. See [this](https://github.com/smashkoala/CarND-MPC-Project) repository in GitHub.
+
+2. Student describes their model in detail. This includes the state, actuators and update equations.
+>The state consists of x, y, psi, v, cte and epsi. The coordinate system was converted from map coordinate to vehicle coordinate before the solver is called.
+The actuators are throttle and steering angle. For throttle, the constraint is set -1.0 for lower bound, and 1.0 for upper bound (line 184-187 in MPC.cpp). For the steering angle, the constraint is set to -25 degree for lower bound and 25 degree for upper bound (line 177-180 in MPC.cpp).
+The update equations are implemented in line 112-117 of MPC.cpp.
+
+3. Student discusses the reasoning behind the chosen N (timestep length) and dt (elapsed duration between timesteps) values. Additionally the student details the previous values tried.
+>N = 10 and dt = 0.15 were chosen. dt = 0.15 is chosen because the latency of the actuators is set 0.1. I wanted to have the 1st predicting point after the latency so that the 1st predicted point includes the effects of the latency.
+N = 10 is chosen because I thought predicting the state after 0.15 x 10 = 1.5 second is already good enough, since with the reference speed of 80 mph, the distance during this N period can be 0.033 miles (around 50 meter). Distance between points can be 0.0033 miles (around 5 meter).
+I tried the N=25 and 20, but the car oscillated badly with these N settings, probably because it required too much computation and my PC was overloaded.  
+
+4. A polynomial is fitted to waypoints.
+If the student preprocesses waypoints, the vehicle state, and/or actuators prior to the MPC procedure it is described.
+>A polynomial is fitted to waypoints with 3 degree polynomial.
+The waypoints are preprocessed in order to convert the data to vehicle coordinate system.
+
+5. The student implements Model Predictive Control that handles a 100 millisecond latency. Student provides details on how they deal with latency.
+>I added the values which can be caused by latency as below to v, psi, px and py before they are converted to the vehicle coordinate.
+main.cpp line 100-104.  
+`v = v + throttle_value * latency;`  
+`psi = psi - v*steer_value/Lf*latency;`  
+`px = px + v*cos(psi)*latency;`  
+`py = py + v*sin(psi)*latency;`  
+
+6. No tire may leave the drivable portion of the track surface. The car may not pop up onto ledges or roll over any surfaces that would otherwise be considered unsafe (if humans were in the vehicle).  
+>This is OK. The car does not leave the drivable portions of the track.
+
+
+
+---
+
 ## Dependencies
 
 * cmake >= 3.5
@@ -19,7 +53,7 @@ Self-Driving Car Engineer Nanodegree Program
   * Run either `install-mac.sh` or `install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
@@ -43,7 +77,7 @@ Self-Driving Car Engineer Nanodegree Program
        per this [forum post](https://discussions.udacity.com/t/incorrect-checksum-for-freed-object/313433/19).
   * Linux
     * You will need a version of Ipopt 3.12.1 or higher. The version available through `apt-get` is 3.11.x. If you can get that version to work great but if not there's a script `install_ipopt.sh` that will install Ipopt. You just need to download the source from the Ipopt [releases page](https://www.coin-or.org/download/source/Ipopt/).
-    * Then call `install_ipopt.sh` with the source directory as the first argument, ex: `sudo bash install_ipopt.sh Ipopt-3.12.1`. 
+    * Then call `install_ipopt.sh` with the source directory as the first argument, ex: `sudo bash install_ipopt.sh Ipopt-3.12.1`.
   * Windows: TODO. If you can use the Linux subsystem and follow the Linux instructions.
 * [CppAD](https://www.coin-or.org/CppAD/)
   * Mac: `brew install cppad`
@@ -128,4 +162,3 @@ still be compilable with cmake and make./
 
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
