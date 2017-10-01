@@ -20,7 +20,7 @@ I tried the N=25 and 20, but the car oscillated badly with these N settings, pro
 4. A polynomial is fitted to waypoints.
 If the student preprocesses waypoints, the vehicle state, and/or actuators prior to the MPC procedure it is described.
 >A polynomial is fitted to waypoints with 3 degree polynomial.
-The waypoints are preprocessed in order to convert the data to vehicle coordinate system.
+The vehicle state is preprocessed in order to convert the data to vehicle coordinate system. See line 113-119 in main.cpp.
 
 5. The student implements Model Predictive Control that handles a 100 millisecond latency. Student provides details on how they deal with latency.
 >I added the values which can be caused by latency as below to v, psi, px and py before they are converted to the vehicle coordinate.
