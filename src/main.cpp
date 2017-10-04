@@ -93,15 +93,15 @@ int main() {
           double v = j[1]["speed"];
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
-          
           double latency = 0.1;
           double Lf = 2.67;
 
-          v = v + throttle_value*latency;
-          psi = psi - v*steer_value/Lf*latency;
           px = px + v*cos(psi)*latency;
           py = py + v*sin(psi)*latency;
-          
+
+          v = v + throttle_value*latency;
+          psi = psi - v*steer_value/Lf*latency;
+        
           /*
           * TODO: Calculate steering angle and throttle using MPC.
           *
